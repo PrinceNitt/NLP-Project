@@ -92,7 +92,7 @@ python -c "import nltk; nltk.download('punkt')"
 Run this command to verify everything is installed correctly:
 
 ```bash
-python -c "from modules.users import process_user_mode; print('✓ Installation successful!')"
+python -c 'from modules.users import process_user_mode; print("✓ Installation successful!")'
 ```
 
 If you see the success message, you're ready to go!
