@@ -1,6 +1,6 @@
 import streamlit as st
 import sqlite3
-from resume_parser import extract_resume_info_from_pdf, extract_contact_number_from_resume, extract_education_from_resume, \
+from utils.resume_parser import extract_resume_info_from_pdf, extract_contact_number_from_resume, extract_education_from_resume, \
     extract_experience, suggest_skills_for_job, show_colored_skills, calculate_resume_score, extract_resume_info
 
 # Function to create a table for PDFs in SQLite database if it doesn't exist

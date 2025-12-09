@@ -85,12 +85,9 @@ The project leverages the following technologies and tools:
 ```
 NLP-Project/
 ├── main.py                  # Main application entry point
-├── resume_parser.py         # Core resume parsing logic
-├── resume_store.py          # Resume storage utilities
-├── train_model.py           # Model training script
-├── train_2.py               # Additional training utilities
 ├── requirements.txt         # Python dependencies
 ├── README.md                # Project documentation
+├── SETUP.md                 # Detailed setup guide
 ├── .gitignore              # Git ignore rules
 │
 ├── modules/                 # Application modules
@@ -99,6 +96,16 @@ NLP-Project/
 │   ├── recruiters.py       # Recruiter mode functionality
 │   ├── admin.py            # Admin panel functionality
 │   └── feedback.py         # Feedback system
+│
+├── utils/                   # Utility modules
+│   ├── __init__.py         # Package initializer
+│   ├── resume_parser.py    # Core resume parsing logic
+│   └── resume_store.py     # Resume storage utilities
+│
+├── scripts/                 # Training and utility scripts
+│   ├── __init__.py         # Package initializer
+│   ├── train_model.py      # Model training script
+│   └── train_2.py          # Additional training utilities
 │
 ├── data/                    # Data files and database
 │   ├── newSkills.csv       # Skills database
@@ -172,7 +179,7 @@ The application includes a custom skill extraction model that can be trained for
 
 1. **Train the model**
    ```bash
-   python train_model.py
+   python scripts/train_model.py
    ```
    This will create a trained model in the `TrainedModel/skills/` directory.
 

@@ -105,20 +105,32 @@ Ensure your project has this structure:
 ```
 NLP-Project/
 ├── main.py
-├── resume_parser.py
+├── requirements.txt
+├── README.md
+├── SETUP.md
+├── .gitignore
 ├── modules/
 │   ├── __init__.py
 │   ├── users.py
 │   ├── recruiters.py
 │   ├── admin.py
 │   └── feedback.py
+├── utils/
+│   ├── __init__.py
+│   ├── resume_parser.py
+│   └── resume_store.py
+├── scripts/
+│   ├── __init__.py
+│   ├── train_model.py
+│   └── train_2.py
 ├── data/
 │   ├── newSkills.csv
 │   ├── UpdatedSkills.csv
 │   ├── sugestedSkills.csv
 │   ├── majors.csv
 │   ├── position.csv
-│   └── feedback_data.csv
+│   ├── feedback_data.csv
+│   └── user_pdfs.db
 └── TrainedModel/
     └── skills/ (optional)
 ```
@@ -176,11 +188,11 @@ The application includes scripts to train custom NER models for better skill ext
 
 ### Training the Skill Extraction Model
 
-1. **Prepare training data** (already included in `train_model.py`)
+1. **Prepare training data** (already included in `scripts/train_model.py`)
 
 2. **Run the training script:**
    ```bash
-   python train_model.py
+   python scripts/train_model.py
    ```
 
 3. **Wait for training to complete** (may take 5-15 minutes depending on your hardware)
@@ -192,7 +204,7 @@ The application includes scripts to train custom NER models for better skill ext
 
 ### Training Data Format
 
-Training data is defined in `train_model.py` as:
+Training data is defined in `scripts/train_model.py` as:
 ```python
 TRAIN_DATA = [
     ("Proficient in Python, Java, and C++", {
