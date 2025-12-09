@@ -25,7 +25,7 @@
 
 The **Resume NLP Parser** revolutionizes the recruitment process by employing sophisticated Natural Language Processing (NLP) techniques. This tool efficiently extracts, analyzes, and visualizes data from resumes, enabling data-driven decision-making in hiring. Tailored for both candidates and recruiters, it enhances the application experience by parsing resumes comprehensively and offering powerful insights.
 
-## प्रोजेक्ट के बारे में (About the Project in Hindi)
+##(About the Project in Hindi)
 
 **Resume NLP Parser** ek advanced tool hai jo Natural Language Processing (NLP) techniques ka use karke resumes ko analyze karta hai. Ye project recruitment process ko simple aur efficient banata hai.
 
