@@ -115,6 +115,8 @@ NLP-Project/
 
 ## How to Run the Application
 
+> **📖 For detailed setup instructions, see [SETUP.md](SETUP.md)**
+
 ### Prerequisites
 - Python 3.8 or higher (Python 3.12 recommended)
 - pip (Python package manager)
@@ -163,6 +165,23 @@ NLP-Project/
 7. **Access the application**
    - The application will automatically open in your default web browser
    - If not, navigate to: `http://localhost:8501`
+
+### Optional: Training the Custom NER Model
+
+The application includes a custom skill extraction model that can be trained for better accuracy. If you want to use the trained model:
+
+1. **Train the model**
+   ```bash
+   python train_model.py
+   ```
+   This will create a trained model in the `TrainedModel/skills/` directory.
+
+2. **Verify the model**
+   ```bash
+   python -c "import spacy; nlp = spacy.load('TrainedModel/skills'); print('Model loaded successfully')"
+   ```
+
+**Note:** The application will work without the trained model by using CSV-based skill extraction. The trained model enhances accuracy but is not required.
 
 ### Quick Start (Hindi/Hinglish)
 ```bash
