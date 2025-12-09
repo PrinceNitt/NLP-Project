@@ -6,7 +6,7 @@
 
 ## 📋 Table of Contents
 - [Overview](#overview)
-- (About the Project in Hindi)](#प्रोजेक्ट-के-बारे-में-about-the-project-in-hindi)
+- (About the Project in Hindi)](about-the-project-in-hindi)
 - [Key Features](#key-features)
 - [Technologies Used](#technologies-used)
 - [Project Structure](#project-structure)
