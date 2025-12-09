@@ -1,6 +1,6 @@
 import streamlit as st
 import sqlite3
-from resume_parser import extract_resume_info_from_pdf, extract_contact_number_from_resume, extract_education_from_resume, \
+from utils.resume_parser import extract_resume_info_from_pdf, extract_contact_number_from_resume, extract_education_from_resume, \
     extract_experience, suggest_skills_for_job, show_colored_skills, calculate_resume_score, extract_resume_info
 
 # Function to create a table for PDFs in SQLite database if it doesn't exist
@@ -51,7 +51,12 @@ def process_user_mode():
 
         # Fix the function call for extracting the phone number
         contact_number = extract_contact_number_from_resume(pdf_text)
-        st.write(f"Phone Number:  +{contact_number}")
+        if contact_number:
+            # Only add + if not already present in the number
+            display_number = contact_number if contact_number.startswith('+') else f"+{contact_number}"
+            st.write(f"Phone Number: {display_number}")
+        else:
+            st.write("Phone Number: Not found")
         
         st.write(f"Degree/Major: {resume_info['degree_major']}")
 

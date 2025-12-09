@@ -5,6 +5,11 @@ import streamlit as st
 import spacy
 import csv
 import nltk
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 # Additional libraries
 nltk.download('punkt')
@@ -77,9 +82,18 @@ def csv_skills(doc):
 
     return skills
 
-nlp_skills = spacy.load('TrainedModel/skills')  # Load the trained NER model for skills
+# Try to load the trained NER model for skills, fallback to None if not available
+try:
+    nlp_skills = spacy.load('TrainedModel/skills')
+except OSError:
+    nlp_skills = None
+    logger.warning("Trained skill model not found. Using CSV-based skill extraction only.")
 
 def extract_skills_from_ner(doc):
+    """Extract skills using trained NER model if available"""
+    if nlp_skills is None:
+        return set()  # Return empty set if model not available
+    
     non_skill_labels = {'DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL', 'EMAIL'}
     
     skills = set()

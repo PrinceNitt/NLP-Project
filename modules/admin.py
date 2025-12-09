@@ -26,7 +26,10 @@ def process_admin_mode():
             st.error("Authentication failed. Please try again.")
 
 def authenticate_admin(username, password):
-    # Updated credentials
+    # SECURITY WARNING: Hardcoded credentials should not be used in production.
+    # For production deployment, use environment variables or a secure configuration system.
+    # Example: username = os.getenv('ADMIN_USERNAME')
+    #          password = os.getenv('ADMIN_PASSWORD')
     hardcoded_username = "prince81"
     hardcoded_password = "12345"
     return username == hardcoded_username and password == hardcoded_password
