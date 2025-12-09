@@ -6,7 +6,7 @@
 
 ## 📋 Table of Contents
 - [Overview](#overview)
-- [प्रोजेक्ट के बारे में (About the Project in Hindi)](#प्रोजेक्ट-के-बारे-में-about-the-project-in-hindi)
+- (About the Project in Hindi)](#प्रोजेक्ट-के-बारे-में-about-the-project-in-hindi)
 - [Key Features](#key-features)
 - [Technologies Used](#technologies-used)
 - [Project Structure](#project-structure)
@@ -29,7 +29,7 @@ The **Resume NLP Parser** revolutionizes the recruitment process by employing so
 
 **Resume NLP Parser** ek advanced tool hai jo Natural Language Processing (NLP) techniques ka use karke resumes ko analyze karta hai. Ye project recruitment process ko simple aur efficient banata hai.
 
-### मुख्य विशेषताएं (Key Highlights):
+###(Key Highlights):
 - 📄 **Resume Parsing**: PDF resumes se automatically information extract karta hai
 - 🔍 **Skill Extraction**: Candidate ki skills ko identify karta hai
 - 👤 **Contact Details**: Name, email, phone number extract karta hai
@@ -38,13 +38,13 @@ The **Resume NLP Parser** revolutionizes the recruitment process by employing so
 - 📊 **Resume Score**: 100 me se resume ko score deta hai
 - 🎯 **Job Recommendations**: Candidate ke liye suitable jobs suggest karta hai
 
-### किसके लिए है ये प्रोजेक्ट (Who is this for):
+###(Who is this for):
 1. **Job Seekers**: Apne resume ko analyze kar sakte hain aur improve kar sakte hain
 2. **Recruiters**: Multiple resumes ko quickly screen kar sakte hain
 3. **HR Teams**: Candidate selection process ko fast kar sakte hain
 4. **Students**: NLP aur machine learning seekhne ke liye example project
 
-### कैसे काम करता है (How it works):
+###(How it works):
 1. User apna resume PDF format me upload karta hai
 2. System NLP algorithms use karke resume ko parse karta hai
 3. Important information automatically extract ho jati hai
@@ -407,7 +407,6 @@ In the pipeline for this project are several enhancements:
 ## Team
 
 - **Prince Kumar** (106121096)
-- **Roushan Kumar** (106121108)
 
 ## License
 
