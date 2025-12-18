@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  resume-parser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resume-parser-nlp
+    ports:
+      - "8501:8501"
+    environment:
+      - DATABASE_PATH=/app/data/user_pdfs.db
+      - LOG_LEVEL=INFO
+      - DEBUG=False
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.settimeout(1); result=s.connect_ex(('localhost', 8501)); s.close(); exit(0 if result==0 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+

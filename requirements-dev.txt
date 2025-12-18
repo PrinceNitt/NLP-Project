@@ -1,0 +1,23 @@
+# Development dependencies for Resume Parser NLP Project
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Code Quality
+black==23.12.1
+flake8==6.1.0
+pylint==3.0.3
+mypy==1.8.0
+
+# Type Stubs
+types-requests==2.31.0.10
+
+# Pre-commit hooks
+pre-commit==3.6.0
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+
