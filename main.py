@@ -100,6 +100,7 @@ def main() -> None:
         """, unsafe_allow_html=True)
         
         st.sidebar.markdown("### 🧭 Navigation")
+        st.sidebar.markdown("👋 **Welcome!** Select a mode to get started.")
         
         app_mode = st.sidebar.selectbox(
             "Choose an option",
