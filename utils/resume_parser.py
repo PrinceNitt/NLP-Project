@@ -49,12 +49,44 @@ except LookupError:
             logger.info("Application will continue. Some NLP features may be limited.")
 
 # Load the spaCy model for English
+nlp = None
 try:
     nlp = spacy.load(SPACY_MODEL)
     logger.info(f"Loaded spaCy model: {SPACY_MODEL}")
 except OSError as e:
-    logger.error(f"Failed to load spaCy model {SPACY_MODEL}: {e}")
-    raise
+    logger.warning(f"Failed to load spaCy model {SPACY_MODEL}: {e}")
+    logger.info("Attempting to download spaCy model...")
+    try:
+        # Try to download the model programmatically
+        from spacy.cli import download
+        download(SPACY_MODEL)
+        nlp = spacy.load(SPACY_MODEL)
+        logger.info(f"Successfully downloaded and loaded spaCy model: {SPACY_MODEL}")
+    except Exception as download_error:
+        logger.error(f"Failed to download spaCy model {SPACY_MODEL}: {download_error}")
+        # Try alternative method using subprocess
+        try:
+            import subprocess
+            import sys
+            logger.info("Trying alternative download method...")
+            result = subprocess.run(
+                [sys.executable, "-m", "spacy", "download", SPACY_MODEL],
+                capture_output=True,
+                text=True,
+                timeout=300
+            )
+            if result.returncode == 0:
+                nlp = spacy.load(SPACY_MODEL)
+                logger.info(f"Successfully downloaded and loaded spaCy model: {SPACY_MODEL}")
+            else:
+                raise OSError(f"Could not download spaCy model: {result.stderr}")
+        except Exception as subprocess_error:
+            logger.error(f"All download methods failed: {subprocess_error}")
+            logger.error("spaCy model is required for this application.")
+            raise OSError(
+                f"spaCy model {SPACY_MODEL} is not available and could not be downloaded. "
+                f"Please ensure it's installed: python -m spacy download {SPACY_MODEL}"
+            )
 
 def load_keywords(file_path: Path) -> Set[str]:
     """
