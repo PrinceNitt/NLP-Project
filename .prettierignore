@@ -1,45 +1,45 @@
-# Python files (use Black instead)
-*.py
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+# # Python files (use Black instead)
+# *.py
+# __pycache__/
+# *.pyc
+# *.pyo
+# *.pyd
+# .Python
 
-# Dependencies
-node_modules/
-venv/
-env/
+# # Dependencies
+# node_modules/
+# venv/
+# env/
 
-# Build files
-build/
-dist/
-*.egg-info/
+# # Build files
+# build/
+# dist/
+# *.egg-info/
 
-# Database
-*.db
-*.sqlite
+# # Database
+# *.db
+# *.sqlite
 
-# Logs
-*.log
-logs/
+# # Logs
+# *.log
+# logs/
 
-# Environment
-.env
-.env.local
+# # Environment
+# .env
+# .env.local
 
-# IDE
-.vscode/
-.idea/
+# # IDE
+# .vscode/
+# .idea/
 
-# OS
-.DS_Store
-Thumbs.db
+# # OS
+# .DS_Store
+# Thumbs.db
 
-# Data files
-data/*.csv
-data/*.db
+# # Data files
+# data/*.csv
+# data/*.db
 
-# Trained models
-TrainedModel/
+# # Trained models
+# TrainedModel/
 
