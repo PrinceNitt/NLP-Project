@@ -476,11 +476,232 @@ def create_success_card(title: str, content: str, icon: str = "✅") -> None:
     """, unsafe_allow_html=True)
 
 
-def display_skill_tags(skills: list, color_scheme: str = "purple") -> None:
-    """Display skills as attractive tags with premium design."""
+def display_skill_tags(skills: list, color_scheme: str = "purple", max_display: int = 50) -> None:
+    """
+    Display skills as attractive tags with premium design.
+    Skills are organized in a clean grid layout with better spacing.
+    
+    Args:
+        skills: List of skill names
+        color_scheme: Color scheme for the tags (purple, blue, pink, green, red)
+        max_display: Maximum number of skills to display
+    """
     if not skills:
         st.info("No skills found")
         return
+    
+    # Handle case where skills might be a JSON string or other format
+    if isinstance(skills, str):
+        # First try JSON parsing
+        try:
+            import json
+            skills = json.loads(skills)
+        except (json.JSONDecodeError, ValueError):
+            # If not valid JSON, try to split by common delimiters
+            if ',' in skills:
+                skills = [s.strip() for s in skills.split(',') if s.strip()]
+            elif ';' in skills:
+                skills = [s.strip() for s in skills.split(';') if s.strip()]
+            elif ' ' in skills:
+                # Handle space-separated skills (like "ReactOSGoCollaboration JavaScript MongoDB...")
+                # Split by spaces but be smart about it
+                import re
+                # Split by spaces, but keep multi-word skills together
+                parts = skills.split()
+                skills = []
+                current_skill = ""
+                for part in parts:
+                    part = part.strip()
+                    if not part:
+                        continue
+                    # Check if this looks like the start of a new skill (capital letter after lowercase)
+                    # or if it's a known skill pattern
+                    if current_skill and part[0].isupper() and current_skill[-1].islower():
+                        # This is likely a new skill
+                        if current_skill:
+                            skills.append(current_skill)
+                        current_skill = part
+                    else:
+                        # Continue building current skill
+                        if current_skill:
+                            current_skill += " " + part
+                        else:
+                            current_skill = part
+                if current_skill:
+                    skills.append(current_skill)
+            else:
+                skills = [skills.strip()] if skills.strip() else []
+    
+    # Ensure skills is a list
+    if not isinstance(skills, list):
+        if isinstance(skills, (set, tuple)):
+            skills = list(skills)
+        else:
+            skills = []
+    
+    # Remove duplicates, clean skills, and organize by category
+    unique_skills = []
+    seen = set()
+    for skill in skills:
+        # Handle non-string skills
+        if not isinstance(skill, str):
+            skill = str(skill)
+        # Clean skill name
+        clean_skill = skill.strip()
+        if clean_skill and clean_skill.lower() not in seen:
+            unique_skills.append(clean_skill)
+            seen.add(clean_skill.lower())
+    
+    # Categorize skills for better organization
+    def categorize_skill(skill: str) -> str:
+        """Categorize skill into groups with precise matching."""
+        skill_lower = skill.lower().strip()
+        skill_normalized = skill_lower.replace('.', '').replace('-', ' ').replace('_', ' ')
+        
+        # Exact matches first for common skills
+        exact_matches = {
+            # Databases
+            'sql': 'Databases',
+            'mongodb': 'Databases',
+            'mysql': 'Databases',
+            'postgresql': 'Databases',
+            'redis': 'Databases',
+            'oracle': 'Databases',
+            # Web Technologies
+            'react': 'Web Technologies',
+            'node.js': 'Web Technologies',
+            'nodejs': 'Web Technologies',
+            'express.js': 'Web Technologies',
+            'expressjs': 'Web Technologies',
+            'express': 'Web Technologies',
+            'angular': 'Web Technologies',
+            'vue': 'Web Technologies',
+            'html': 'Web Technologies',
+            'css': 'Web Technologies',
+            # Programming Languages
+            'python': 'Programming Languages',
+            'java': 'Programming Languages',
+            'javascript': 'Programming Languages',
+            'typescript': 'Programming Languages',
+            'c++': 'Programming Languages',
+            'c#': 'Programming Languages',
+            'go': 'Programming Languages',
+            'rust': 'Programming Languages',
+            'ruby': 'Programming Languages',
+            'php': 'Programming Languages',
+            'swift': 'Programming Languages',
+            'kotlin': 'Programming Languages',
+            'dart': 'Programming Languages',
+            'scala': 'Programming Languages',
+            'r': 'Programming Languages',
+            'matlab': 'Programming Languages',
+            # Soft Skills
+            'collaboration': 'Soft Skills',
+            'creativity': 'Soft Skills',
+            'communication': 'Soft Skills',
+            'problem-solving': 'Soft Skills',
+            'problem solving': 'Soft Skills',
+            'leadership': 'Soft Skills',
+            'teamwork': 'Soft Skills',
+            'public speaking': 'Soft Skills',
+            # Cloud & DevOps
+            'git': 'Cloud & DevOps',
+            'github': 'Cloud & DevOps',
+            'gitlab': 'Cloud & DevOps',
+            'docker': 'Cloud & DevOps',
+            'kubernetes': 'Cloud & DevOps',
+            'aws': 'Cloud & DevOps',
+            'azure': 'Cloud & DevOps',
+        }
+        
+        # Check exact matches first
+        if skill_lower in exact_matches:
+            return exact_matches[skill_lower]
+        
+        # Check normalized exact matches
+        if skill_normalized in exact_matches:
+            return exact_matches[skill_normalized]
+        
+        # Soft Skills - Check with keywords
+        soft_skills_keywords = [
+            'communication', 'collaboration', 'leadership', 'problem solving', 'problem-solving',
+            'creativity', 'teamwork', 'public speaking', 'presentation', 'negotiation',
+            'time management', 'adaptability', 'critical thinking', 'analytical', 'interpersonal'
+        ]
+        if any(soft in skill_normalized for soft in soft_skills_keywords):
+            return 'Soft Skills'
+        
+        # Databases - Check before Programming Languages
+        db_keywords = [
+            'mongodb', 'mysql', 'postgresql', 'postgres', 'redis', 'oracle', 'cassandra',
+            'elasticsearch', 'dynamodb', 'nosql', 'database', 'db', 'sqlite',
+            'neo4j', 'couchdb', 'mariadb', 'firebase', 'supabase'
+        ]
+        if any(db in skill_normalized for db in db_keywords):
+            return 'Databases'
+        
+        # Web Technologies
+        web_keywords = [
+            'react', 'angular', 'vue', 'node', 'nodejs', 'express', 'expressjs', 'html',
+            'css', 'bootstrap', 'tailwind', 'jquery', 'next', 'nextjs', 'nuxt', 'svelte',
+            'ember', 'backbone', 'webpack', 'vite', 'npm', 'yarn', 'frontend', 'backend',
+            'fullstack', 'full stack'
+        ]
+        if any(web in skill_normalized for web in web_keywords):
+            return 'Web Technologies'
+        
+        # Cloud & DevOps
+        cloud_keywords = [
+            'aws', 'azure', 'gcp', 'google cloud', 'docker', 'kubernetes', 'k8s', 'jenkins',
+            'terraform', 'ansible', 'ci/cd', 'cicd', 'devops', 'git', 'github', 'gitlab',
+            'bitbucket', 'circleci', 'travis', 'github actions', 'cloud', 'serverless'
+        ]
+        if any(cloud in skill_normalized for cloud in cloud_keywords):
+            return 'Cloud & DevOps'
+        
+        # Data Science & ML
+        ml_keywords = [
+            'machine learning', 'ml', 'data science', 'tensorflow', 'pytorch', 'keras',
+            'pandas', 'numpy', 'scikit', 'sklearn', 'ai', 'artificial intelligence',
+            'nlp', 'natural language', 'deep learning', 'neural network', 'opencv',
+            'matplotlib', 'seaborn', 'jupyter', 'data analysis', 'data visualization'
+        ]
+        if any(ml in skill_normalized for ml in ml_keywords):
+            return 'Data Science & ML'
+        
+        # Frameworks & Tools
+        framework_keywords = [
+            'spring', 'django', 'flask', 'laravel', 'rails', 'ruby on rails', 'graphql',
+            'rest', 'restful', 'api', 'fastapi', 'nest', 'nestjs', 'asp.net', 'dotnet',
+            '.net', 'symfony', 'codeigniter', 'phalcon'
+        ]
+        if any(fw in skill_normalized for fw in framework_keywords):
+            return 'Frameworks & Tools'
+        
+        # Programming Languages - Check last
+        lang_keywords = [
+            'python', 'java', 'javascript', 'typescript', 'cpp', 'csharp',
+            'golang', 'rust', 'ruby', 'swift', 'kotlin', 'dart', 'scala',
+            'r language', 'r programming', 'julia', 'perl', 'haskell', 'lua',
+            'clojure', 'erlang', 'elixir', 'vb.net', 'visual basic', 'cobol',
+            'fortran', 'assembly', 'pascal', 'ada', 'abap', 'rpg', 'lisp', 'prolog'
+        ]
+        if any(lang in skill_normalized for lang in lang_keywords):
+            return 'Programming Languages'
+        
+        return 'Other Skills'
+    
+    # Group skills by category
+    categorized = {}
+    for skill in unique_skills[:max_display]:
+        category = categorize_skill(skill)
+        if category not in categorized:
+            categorized[category] = []
+        categorized[category].append(skill)
+    
+    # Sort skills within each category alphabetically
+    for category in categorized:
+        categorized[category] = sorted(categorized[category], key=str.lower)
     
     # Enhanced color schemes with animations
     color_schemes = {
@@ -493,44 +714,142 @@ def display_skill_tags(skills: list, color_scheme: str = "purple") -> None:
     
     gradient = color_schemes.get(color_scheme, color_schemes["purple"])
     
-    skills_html = "".join([
-        f'<span style="'
-        f'display: inline-block; '
-        f'background: {gradient}; '
-        f'background-size: 200% auto; '
-        f'color: white; '
-        f'padding: 0.65rem 1.5rem; '
-        f'border-radius: 30px; '
-        f'margin: 0.5rem 0.5rem 0.5rem 0; '
-        f'font-size: 0.95rem; '
-        f'font-weight: 600; '
-        f'box-shadow: 0 6px 20px rgba(0,0,0,0.2), 0 0 0 0 rgba(255,255,255,0.1) inset; '
-        f'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); '
-        f'cursor: pointer; '
-        f'position: relative; '
-        f'overflow: hidden; '
-        f'letter-spacing: 0.3px; '
-        f'text-shadow: 0 1px 3px rgba(0,0,0,0.2); '
-        f'onmouseover="this.style.transform=\'translateY(-3px) scale(1.05)\'; this.style.boxShadow=\'0 10px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.2) inset\';" '
-        f'onmouseout="this.style.transform=\'translateY(0) scale(1)\'; this.style.boxShadow=\'0 6px 20px rgba(0,0,0,0.2), 0 0 0 0 rgba(255,255,255,0.1) inset\';" '
-        f'">{skill}</span>'
-        for skill in skills[:25]  # Limit to 25 for display
-    ])
+    # Category order for display
+    category_order = [
+        'Programming Languages',
+        'Web Technologies',
+        'Databases',
+        'Cloud & DevOps',
+        'Data Science & ML',
+        'Frameworks & Tools',
+        'Soft Skills',
+        'Other Skills'
+    ]
     
-    st.markdown(f"""
-    <div style="
-        margin: 1.5rem 0;
-        padding: 1rem 0;
-    ">
-        {skills_html}
-    </div>
-    <style>
-    @keyframes skill-gradient {{
-        0%, 100% {{ background-position: 0% 50%; }}
-        50% {{ background-position: 100% 50%; }}
-    }}
-    </style>
-    """, unsafe_allow_html=True)
+    # Create skill tags organized by category
+    category_html = ""
+    for category in category_order:
+        if category in categorized and categorized[category]:
+            category_skills = categorized[category]
+            skills_html = "".join([
+                f'<span style="'
+                f'display: inline-block; '
+                f'background: {gradient}; '
+                f'background-size: 200% auto; '
+                f'color: white; '
+                f'padding: 0.7rem 1.6rem; '
+                f'border-radius: 25px; '
+                f'margin: 0.4rem 0.4rem; '
+                f'font-size: 0.9rem; '
+                f'font-weight: 600; '
+                f'box-shadow: 0 4px 15px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1) inset; '
+                f'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); '
+                f'cursor: pointer; '
+                f'position: relative; '
+                f'overflow: hidden; '
+                f'letter-spacing: 0.2px; '
+                f'text-shadow: 0 1px 3px rgba(0,0,0,0.2); '
+                f'white-space: nowrap; '
+                f'onmouseover="this.style.transform=\'translateY(-3px) scale(1.05)\'; this.style.boxShadow=\'0 8px 25px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.2) inset\';" '
+                f'onmouseout="this.style.transform=\'translateY(0) scale(1)\'; this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1) inset\';" '
+                f'">{str(skill).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#39;")}</span>'
+                for skill in category_skills
+            ])
+            
+            # Escape category name for HTML safety
+            category_escaped = str(category).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            category_html += f'''
+            <div style="margin-bottom: 2rem;">
+                <h4 style="
+                    color: #2c3e50;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    margin-bottom: 1rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+                ">📌 {category_escaped} ({len(category_skills)})</h4>
+                <div style="
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin: 0;
+                    line-height: 1.8;
+                ">
+                    {skills_html}
+                </div>
+            </div>
+            '''
+    
+    # Show count if skills are limited
+    total_skills = len(skills)
+    displayed_count = sum(len(skills) for skills in categorized.values())
+    count_info = ""
+    if total_skills > displayed_count:
+        count_info = f'<div style="color: #7f8c8d; font-size: 0.85rem; margin-top: 1rem; text-align: center; font-weight: 500; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.1);">📊 Showing {displayed_count} of {total_skills} unique skills</div>'
+    
+    # Ensure category_html is not empty
+    if not category_html.strip():
+        st.info("No skills to display")
+        return
+    
+    # Render the HTML - use separate markdown calls for better reliability
+    try:
+        # First render the container
+        st.markdown("""
+        <div style="
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        ">
+        """, unsafe_allow_html=True)
+        
+        # Then render the category HTML
+        st.markdown(category_html, unsafe_allow_html=True)
+        
+        # Render count info if present
+        if count_info:
+            st.markdown(count_info, unsafe_allow_html=True)
+        
+        # Close the container and add styles
+        st.markdown("""
+        </div>
+        <style>
+        @keyframes skill-gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+    except Exception as e:
+        # Fallback: display skills in a simpler format if HTML rendering fails
+        import traceback
+        logger = None
+        try:
+            from utils.logger import setup_logger
+            logger = setup_logger(__name__)
+            logger.error(f"Error rendering skills HTML: {e}\n{traceback.format_exc()}")
+        except:
+            pass
+        
+        # Show skills as simple tags using Streamlit columns
+        st.warning("Displaying skills in simplified format")
+        for category in category_order:
+            if category in categorized and categorized[category]:
+                st.subheader(f"📌 {category} ({len(categorized[category])})")
+                # Use st.columns for better layout
+                num_cols = min(4, len(categorized[category]))
+                if num_cols > 0:
+                    cols = st.columns(num_cols)
+                    for idx, skill in enumerate(categorized[category][:20]):
+                        col_idx = idx % num_cols
+                        with cols[col_idx]:
+                            st.markdown(f'<span style="background: #667eea; color: white; padding: 0.5rem 1rem; border-radius: 20px; display: inline-block; margin: 0.25rem; font-weight: 600;">{skill}</span>', unsafe_allow_html=True)
 
 
 def create_metric_card(label: str, value: str, delta: Optional[str] = None, icon: str = "📊") -> None:

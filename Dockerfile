@@ -36,10 +36,17 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data logs TrainedModel
 
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV STREAMLIT_SERVER_PORT=8501
 ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
+
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 8501

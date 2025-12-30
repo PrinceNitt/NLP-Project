@@ -375,7 +375,6 @@ def display_parsed_skills(parsed_skills: Set[str]) -> None:
             <h4 style="color: white; margin-top: 0;">💼 All Skills Parsed from Resume</h4>
         </div>
         """, unsafe_allow_html=True)
-        from utils.ui_components import display_skill_tags
         display_skill_tags(list(parsed_skills)[:30], color_scheme="pink")  # Limit to 30 for display
     else:
         create_info_card("Skills", "No skills parsed from resume")
@@ -415,7 +414,6 @@ def display_skills_found(required_skills: List[str], skills_found: Set[str]) -> 
     # Display found skills
     if found_skills:
         st.markdown("### ✅ Found Skills")
-        from utils.ui_components import display_skill_tags
         display_skill_tags(found_skills, color_scheme="green")
     
     # Display missing skills

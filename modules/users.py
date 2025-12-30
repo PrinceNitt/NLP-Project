@@ -2,6 +2,7 @@
 User module for Resume Parser NLP Application.
 Handles user resume upload and parsing functionality.
 """
+import json
 import streamlit as st
 from typing import Optional, Dict, Any
 
@@ -193,13 +194,63 @@ def display_resume_info(resume_info: Dict[str, Any], pdf_text) -> None:
         """, unsafe_allow_html=True)
         try:
             skills = resume_info.get('skills', [])
+            
+            # Handle case where skills might be a JSON string
+            if isinstance(skills, str):
+                try:
+                    import json
+                    skills = json.loads(skills)
+                except (json.JSONDecodeError, ValueError):
+                    # If not valid JSON, try to split by comma or other delimiters
+                    if ',' in skills:
+                        skills = [s.strip() for s in skills.split(',')]
+                    elif ';' in skills:
+                        skills = [s.strip() for s in skills.split(';')]
+                    elif ' ' in skills and len(skills.split()) > 1:
+                        # Handle space-separated skills (like in the image)
+                        skills = [s.strip() for s in skills.split() if s.strip()]
+                    else:
+                        skills = [skills.strip()] if skills.strip() else []
+            
+            # Ensure skills is a list
+            if not isinstance(skills, list):
+                if isinstance(skills, (set, tuple)):
+                    skills = list(skills)
+                else:
+                    skills = []
+            
+            # Filter out empty strings and None values, and ensure all are strings
+            cleaned_skills = []
+            for skill in skills:
+                if skill:
+                    # Convert to string if not already
+                    skill_str = str(skill).strip()
+                    # Remove any HTML tags if present
+                    import re
+                    skill_str = re.sub(r'<[^>]+>', '', skill_str)
+                    if skill_str and len(skill_str) > 0:
+                        cleaned_skills.append(skill_str)
+            
+            skills = cleaned_skills
+            
+            # Always use display_skill_tags for categorized display
             if skills:
-                display_skill_tags(skills, color_scheme="purple")
+                display_skill_tags(skills, color_scheme="purple", max_display=100)
             else:
                 create_info_card("Skills", "No skills found in resume")
         except Exception as e:
             log_error(logger, e, {'operation': 'display_skills'})
             st.warning("Error displaying skills")
+            # Fallback: try to show skills even if there's an error
+            try:
+                skills_raw = resume_info.get('skills', [])
+                if skills_raw:
+                    if isinstance(skills_raw, str):
+                        st.write(f"Skills: {skills_raw}")
+                    else:
+                        display_skill_tags(list(skills_raw) if not isinstance(skills_raw, list) else skills_raw, color_scheme="purple")
+            except:
+                pass
         
         # Experience Section
         st.markdown("""
@@ -273,9 +324,9 @@ def display_resume_info(resume_info: Dict[str, Any], pdf_text) -> None:
                 suggested_skills = suggest_skills_for_job(desired_job_clean)
                 
                 if suggested_skills:
-                    st.write("**Recommended Skills:**")
-                    for skill in suggested_skills:
-                        st.write(f"- {skill}")
+                    st.markdown("### **Recommended Skills:**")
+                    # Use display_skill_tags for consistent, categorized display
+                    display_skill_tags(suggested_skills, color_scheme="blue", max_display=50)
                 else:
                     st.info(f"No specific skills found for '{desired_job_clean}'. Try a different job title.")
             except Exception as e:

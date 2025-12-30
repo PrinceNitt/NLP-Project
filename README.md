@@ -276,8 +276,10 @@ Admins have privileged access, requiring authentication to access this section. 
 - Option to view all feedback data
 
 **Admin Credentials:**
-- Username: `prince81`
-- Password: `12345`
+- ⚠️ **IMPORTANT:** Default credentials should be changed in production!
+- Default Username: `admin` (configurable via `ADMIN_USERNAME` env var)
+- Default Password: Set via `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH` environment variable
+- See `ENV_SETUP.md` for configuration details
 
 **How to use:**
 1. Select "Admin" from the sidebar
