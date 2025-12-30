@@ -353,6 +353,9 @@ def apply_custom_css() -> None:
 
 def create_hero_section(title: str, subtitle: str = "") -> None:
     """Create an attractive hero section with premium design."""
+    # Compute subtitle HTML separately to avoid nested f-string issues
+    subtitle_html = f'<p style="color: rgba(255,255,255,0.95); font-size: 1.3rem; margin-top: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">{subtitle}</p>' if subtitle else ''
+    
     st.markdown(f"""
     <div style="
         background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -384,7 +387,7 @@ def create_hero_section(title: str, subtitle: str = "") -> None:
             ">
                 {title}
             </h1>
-            {f'<p style="color: rgba(255,255,255,0.95); font-size: 1.3rem; margin-top: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">{subtitle}</p>' if subtitle else ''}
+            {subtitle_html}
         </div>
         <div style="
             position: absolute;
@@ -731,30 +734,40 @@ def display_skill_tags(skills: list, color_scheme: str = "purple", max_display: 
     for category in category_order:
         if category in categorized and categorized[category]:
             category_skills = categorized[category]
-            skills_html = "".join([
-                f'<span style="'
-                f'display: inline-block; '
-                f'background: {gradient}; '
-                f'background-size: 200% auto; '
-                f'color: white; '
-                f'padding: 0.7rem 1.6rem; '
-                f'border-radius: 25px; '
-                f'margin: 0.4rem 0.4rem; '
-                f'font-size: 0.9rem; '
-                f'font-weight: 600; '
-                f'box-shadow: 0 4px 15px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1) inset; '
-                f'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); '
-                f'cursor: pointer; '
-                f'position: relative; '
-                f'overflow: hidden; '
-                f'letter-spacing: 0.2px; '
-                f'text-shadow: 0 1px 3px rgba(0,0,0,0.2); '
-                f'white-space: nowrap; '
-                f'onmouseover="this.style.transform=\'translateY(-3px) scale(1.05)\'; this.style.boxShadow=\'0 8px 25px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.2) inset\';" '
-                f'onmouseout="this.style.transform=\'translateY(0) scale(1)\'; this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1) inset\';" '
-                f'">{str(skill).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#39;")}</span>'
-                for skill in category_skills
-            ])
+            # Build skills HTML - escape skill name first to avoid f-string issues
+            # Pre-build JavaScript handlers to avoid nested quote issues
+            hover_js = "this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.2) inset';"
+            out_js = "this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1) inset';"
+            
+            skills_html_parts = []
+            for skill in category_skills:
+                # Escape HTML entities in skill name
+                skill_escaped = str(skill).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#39;")
+                # Build the HTML tag using double quotes for outer string to avoid conflicts
+                skills_html_parts.append(
+                    f'<span style="'
+                    f'display: inline-block; '
+                    f'background: {gradient}; '
+                    f'background-size: 200% auto; '
+                    f'color: white; '
+                    f'padding: 0.7rem 1.6rem; '
+                    f'border-radius: 25px; '
+                    f'margin: 0.4rem 0.4rem; '
+                    f'font-size: 0.9rem; '
+                    f'font-weight: 600; '
+                    f'box-shadow: 0 4px 15px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1) inset; '
+                    f'transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); '
+                    f'cursor: pointer; '
+                    f'position: relative; '
+                    f'overflow: hidden; '
+                    f'letter-spacing: 0.2px; '
+                    f'text-shadow: 0 1px 3px rgba(0,0,0,0.2); '
+                    f'white-space: nowrap; '
+                    f'onmouseover="{hover_js}" '
+                    f'onmouseout="{out_js}" '
+                    f'">{skill_escaped}</span>'
+                )
+            skills_html = "".join(skills_html_parts)
             
             # Escape category name for HTML safety
             category_escaped = str(category).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
