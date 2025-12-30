@@ -21,6 +21,11 @@
 - [Team](#team)
 - [License](#license)
 
+
+🚀 Live Project: NLP Resume Parser
+
+🔗 Live App: https://resumeparser81.streamlit.app/
+
 ## Overview
 
 The **Resume NLP Parser** revolutionizes the recruitment process by employing sophisticated Natural Language Processing (NLP) techniques. This tool efficiently extracts, analyzes, and visualizes data from resumes, enabling data-driven decision-making in hiring. Tailored for both candidates and recruiters, it enhances the application experience by parsing resumes comprehensively and offering powerful insights.
