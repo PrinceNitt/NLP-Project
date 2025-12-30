@@ -57,36 +57,64 @@ except OSError as e:
     logger.warning(f"Failed to load spaCy model {SPACY_MODEL}: {e}")
     logger.info("Attempting to download spaCy model...")
     try:
-        # Try to download the model programmatically
-        from spacy.cli import download
-        download(SPACY_MODEL)
-        nlp = spacy.load(SPACY_MODEL)
-        logger.info(f"Successfully downloaded and loaded spaCy model: {SPACY_MODEL}")
-    except Exception as download_error:
-        logger.error(f"Failed to download spaCy model {SPACY_MODEL}: {download_error}")
-        # Try alternative method using subprocess
-        try:
-            import subprocess
-            import sys
-            logger.info("Trying alternative download method...")
+        # Map model name to pip package name
+        model_package_map = {
+            'en_core_web_sm': 'https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl',
+            'en_core_web_md': 'https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl',
+            'en_core_web_lg': 'https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl'
+        }
+        
+        # Try installing via pip directly (works better in virtual environments)
+        import subprocess
+        import sys
+        
+        if SPACY_MODEL in model_package_map:
+            logger.info(f"Installing {SPACY_MODEL} via pip...")
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", "--no-cache-dir", model_package_map[SPACY_MODEL]],
+                capture_output=True,
+                text=True,
+                timeout=600  # 10 minute timeout for large models
+            )
+            if result.returncode == 0:
+                nlp = spacy.load(SPACY_MODEL)
+                logger.info(f"Successfully installed and loaded spaCy model: {SPACY_MODEL}")
+            else:
+                logger.warning(f"Pip install failed: {result.stderr}")
+                # Fallback to spacy download command
+                logger.info("Trying spacy download command...")
+                result = subprocess.run(
+                    [sys.executable, "-m", "spacy", "download", SPACY_MODEL],
+                    capture_output=True,
+                    text=True,
+                    timeout=600
+                )
+                if result.returncode == 0:
+                    nlp = spacy.load(SPACY_MODEL)
+                    logger.info(f"Successfully downloaded and loaded spaCy model: {SPACY_MODEL}")
+                else:
+                    raise OSError(f"Could not download spaCy model: {result.stderr}")
+        else:
+            # For other models, use spacy download
+            logger.info("Using spacy download command...")
             result = subprocess.run(
                 [sys.executable, "-m", "spacy", "download", SPACY_MODEL],
                 capture_output=True,
                 text=True,
-                timeout=300
+                timeout=600
             )
             if result.returncode == 0:
                 nlp = spacy.load(SPACY_MODEL)
                 logger.info(f"Successfully downloaded and loaded spaCy model: {SPACY_MODEL}")
             else:
                 raise OSError(f"Could not download spaCy model: {result.stderr}")
-        except Exception as subprocess_error:
-            logger.error(f"All download methods failed: {subprocess_error}")
-            logger.error("spaCy model is required for this application.")
-            raise OSError(
-                f"spaCy model {SPACY_MODEL} is not available and could not be downloaded. "
-                f"Please ensure it's installed: python -m spacy download {SPACY_MODEL}"
-            )
+    except Exception as download_error:
+        logger.error(f"All download methods failed: {download_error}")
+        logger.error("spaCy model is required for this application.")
+        raise OSError(
+            f"spaCy model {SPACY_MODEL} is not available and could not be downloaded. "
+            f"Please add it to requirements.txt or install manually: python -m spacy download {SPACY_MODEL}"
+        )
 
 def load_keywords(file_path: Path) -> Set[str]:
     """
