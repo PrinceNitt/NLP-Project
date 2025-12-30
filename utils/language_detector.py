@@ -1,4 +1,4 @@
-r""
+"""
 Language detection utilities for multi-language resume parsing.
 """
 from typing import Optional
